@@ -39,13 +39,19 @@ async def chat(req: Request):
     body = await req.json()
     query = (body.get("message") or "").strip()
     history = body.get("history") or []
-    if not query:
+    attachments = body.get("attachments") or []
+    if not query and not attachments:
         return {"error": "empty message"}
+
+    files_text = ""
+    if attachments:
+        import files as file_reader
+        files_text = file_reader.extract_all(attachments)
 
     def gen():
         try:
             rag = get_rag()
-            for ev in rag.answer_stream(query, history=history):
+            for ev in rag.answer_stream(query, history=history, files_text=files_text):
                 yield f"data: {json.dumps(ev)}\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'text': str(e)})}\n\n"

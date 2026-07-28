@@ -63,10 +63,7 @@
     background: rgba(255,255,255,0.75);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s var(--ease);
   }
-  body.chatting header { border-bottom-color: var(--border); }
   .wordmark {
     display: inline-flex; align-items: center; gap: 7px;
     font-size: 15.5px; font-weight: 650; letter-spacing: -0.01em;
@@ -200,19 +197,34 @@
   body:not(.chatting) #bottomBar { display: none; }
   form { max-width: var(--maxw); margin: 0 auto; }
   .composer {
-    display: flex; align-items: flex-end; gap: var(--sp-2);
+    display: flex; flex-direction: column;
     background: var(--bg); border: 1px solid var(--border-strong);
-    border-radius: var(--radius-input); padding: 7px 7px 7px 18px;
+    border-radius: var(--radius-input); padding: 6px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.045);
     transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
   }
   .composer:focus-within { border-color: #c4c4c4; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+  .input-row, .record-row { display: flex; align-items: flex-end; gap: 4px; }
+  .composer.recording .input-row { display: none; }
+  .composer:not(.recording) .record-row { display: none; }
   textarea {
     flex: 1; border: none; outline: none; resize: none; background: none;
     font: inherit; font-size: 16px; line-height: 1.5; color: var(--fg);
-    max-height: 200px; padding: 8px 0; margin: 0;
+    max-height: 200px; padding: 6px 6px; margin: 0;
   }
   textarea::placeholder { color: var(--muted); }
+
+  .tool-wrap { position: relative; display: flex; }
+  .tool {
+    flex: none; width: 36px; height: 36px; border: none; border-radius: 50%;
+    background: none; color: var(--fg-soft); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s var(--ease), color 0.15s var(--ease);
+  }
+  .tool:hover { background: var(--surface); color: var(--fg); }
+  .tool:disabled { opacity: 0.4; cursor: default; }
+  .tool svg { width: 20px; height: 20px; }
+  .tool.danger:hover { color: var(--red); }
   .send {
     flex: none; width: 36px; height: 36px; border: none; border-radius: 50%;
     background: var(--red); color: #fff; cursor: pointer;
@@ -223,6 +235,68 @@
   .send:active:not(:disabled) { transform: scale(0.92); }
   .send:disabled { background: #dcdcdc; cursor: default; }
   .send svg { width: 19px; height: 19px; display: block; }
+
+  /* tooltips (hidden on touch devices) */
+  .tip {
+    position: absolute; bottom: calc(100% + 9px); transform: translateY(4px);
+    background: #2b2b2f; color: #fff; font-size: 12px; white-space: nowrap;
+    padding: 5px 9px; border-radius: 8px; pointer-events: none;
+    opacity: 0; visibility: hidden; z-index: 40;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: opacity 0.12s var(--ease), transform 0.12s var(--ease);
+  }
+  .tip.tip-start { left: 0; }
+  .tip.tip-end { right: 0; }
+  .no-touch .tool-wrap:hover .tip { opacity: 1; visibility: visible; transform: translateY(0); }
+  .tip kbd { font-family: inherit; font-size: 11px; background: rgba(255,255,255,0.18); border-radius: 4px; padding: 1px 5px; line-height: 1.5; }
+
+  /* + menu */
+  .plus-menu {
+    position: absolute; left: 0; z-index: 50;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 6px; min-width: 220px;
+    animation: fade 0.12s var(--ease) both;
+  }
+  .plus-menu.below { top: calc(100% + 10px); }
+  .plus-menu.above { bottom: calc(100% + 10px); }
+  .plus-menu button {
+    display: flex; align-items: center; gap: 11px; width: 100%;
+    padding: 9px 10px; border: none; background: none; border-radius: 9px;
+    font-size: 14px; color: var(--fg); cursor: pointer; text-align: left;
+  }
+  .plus-menu button:hover { background: var(--surface); }
+  .plus-menu button svg { width: 18px; height: 18px; color: var(--fg-soft); flex: none; }
+
+  /* attachment chips (in composer) */
+  .attachments { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 6px 2px; }
+  .attachments:empty { display: none; }
+  .attach-chip {
+    display: flex; align-items: center; gap: 8px; max-width: 220px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 6px 8px; font-size: 12.5px; color: var(--fg-soft);
+  }
+  .attach-chip img, .attach-chip .fico { width: 32px; height: 32px; border-radius: 6px; flex: none; }
+  .attach-chip img { object-fit: cover; }
+  .attach-chip .fico { background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; }
+  .attach-chip .fico svg { width: 16px; height: 16px; }
+  .attach-chip .aname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .attach-chip .aremove { flex: none; display: flex; border: none; background: none; color: var(--muted); cursor: pointer; padding: 2px; border-radius: 5px; }
+  .attach-chip .aremove:hover { color: var(--fg); background: rgba(0,0,0,0.06); }
+  .attach-chip .aremove svg { width: 14px; height: 14px; }
+
+  /* dictation waveform */
+  .record-row { padding: 0 2px; }
+  .waveform { flex: 1; display: flex; align-items: center; gap: 2px; height: 34px; padding: 0 10px; overflow: hidden; }
+  .waveform span { flex: 1; min-width: 2px; max-width: 3px; height: 12%; background: var(--muted); border-radius: 2px; transition: height 0.08s linear; }
+
+  /* attachments shown inside a sent user message */
+  .msg.user .u-atts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-bottom: 6px; }
+  .u-att { display: flex; align-items: center; gap: 6px; max-width: 200px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 5px 8px; font-size: 12px; color: var(--fg-soft); }
+  .u-att img { width: 28px; height: 28px; border-radius: 5px; object-fit: cover; flex: none; }
+  .u-att .fico { width: 28px; height: 28px; border-radius: 5px; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+  .u-att .fico svg { width: 14px; height: 14px; }
+  .u-att .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
   .disclaimer { max-width: var(--maxw); margin: 7px auto 0; text-align: center; font-size: 11.5px; color: var(--muted); }
   body:not(.chatting) .disclaimer { display: none; }
 
@@ -242,11 +316,33 @@
   <div id="hero">
     <h1 class="greeting" id="greeting"></h1>
     <form id="form">
-      <div class="composer">
-        <textarea id="input" rows="1" placeholder="Ask about Gunn…" autocomplete="off" autofocus></textarea>
-        <button class="send" id="send" type="submit" disabled aria-label="Send">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <div class="composer" id="composer">
+        <div class="attachments" id="attachments"></div>
+        <div class="input-row">
+          <div class="tool-wrap">
+            <button class="tool" id="plusBtn" type="button" aria-label="Add photos and files"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <span class="tip tip-start">Add photos &amp; files</span>
+            <div class="plus-menu" id="plusMenu" hidden>
+              <button type="button" id="uploadItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Add photos &amp; files</button>
+            </div>
+          </div>
+          <textarea id="input" rows="1" placeholder="Ask about Gunn…" autocomplete="off" autofocus></textarea>
+          <div class="tool-wrap">
+            <button class="tool" id="micBtn" type="button" aria-label="Dictate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+            <span class="tip tip-end">Dictate <kbd id="dictateKbd"></kbd></span>
+          </div>
+          <div class="tool-wrap">
+            <button class="send" id="send" type="submit" disabled aria-label="Send"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <span class="tip tip-end">Send prompt <kbd>↵</kbd></span>
+          </div>
+        </div>
+        <div class="record-row">
+          <button class="tool" type="button" disabled tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="waveform" id="waveform"></div>
+          <button class="tool danger" id="cancelRec" type="button" aria-label="Cancel dictation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <button class="send" id="confirmRec" type="button" aria-label="Finish dictation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.md,.csv" multiple hidden>
       </div>
     </form>
     <div class="hero-examples">
@@ -295,6 +391,98 @@ let started = false;
 document.getElementById('greeting').textContent =
   GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
 
+/* ---------- composer tools: OS detection, + menu, attachments, dictation ---------- */
+const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || '') || /Mac OS X/.test(navigator.userAgent);
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
+document.body.classList.add(isTouch ? 'touch' : 'no-touch');
+document.getElementById('dictateKbd').textContent = isMac ? '⌃⇧D' : 'Ctrl Shift D';
+
+const FILE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5M14 3l5 5v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/></svg>';
+const X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const composer = document.getElementById('composer');
+const plusBtn = document.getElementById('plusBtn');
+const plusMenu = document.getElementById('plusMenu');
+const uploadItem = document.getElementById('uploadItem');
+const fileInput = document.getElementById('fileInput');
+const attachmentsEl = document.getElementById('attachments');
+const micBtn = document.getElementById('micBtn');
+const cancelRec = document.getElementById('cancelRec');
+const confirmRec = document.getElementById('confirmRec');
+const waveform = document.getElementById('waveform');
+let attached = [];
+
+/* + menu + file picking */
+plusBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const open = plusMenu.hidden;
+  plusMenu.hidden = !open;
+  if (open) {   // flip below the button when there's room, else above
+    const r = plusBtn.getBoundingClientRect();
+    const below = (window.innerHeight - r.bottom) > 220;
+    plusMenu.classList.toggle('below', below);
+    plusMenu.classList.toggle('above', !below);
+  }
+});
+document.addEventListener('click', () => { plusMenu.hidden = true; });
+uploadItem.addEventListener('click', () => { plusMenu.hidden = true; fileInput.click(); });
+fileInput.addEventListener('change', () => { for (const f of fileInput.files) attached.push(f); fileInput.value = ''; renderAttachments(); autogrow(); });
+
+function renderAttachments() {
+  attachmentsEl.innerHTML = '';
+  attached.forEach((f, i) => {
+    const chip = document.createElement('div'); chip.className = 'attach-chip';
+    if (f.type.startsWith('image/')) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); chip.appendChild(img); }
+    else { const ic = document.createElement('span'); ic.className = 'fico'; ic.innerHTML = FILE_ICON; chip.appendChild(ic); }
+    const nm = document.createElement('span'); nm.className = 'aname'; nm.textContent = f.name; chip.appendChild(nm);
+    const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'aremove'; rm.setAttribute('aria-label', 'Remove'); rm.innerHTML = X_ICON;
+    rm.addEventListener('click', () => { attached.splice(i, 1); renderAttachments(); autogrow(); });
+    chip.appendChild(rm); attachmentsEl.appendChild(chip);
+  });
+}
+function fileToBase64(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); }); }
+
+/* dictation via Web Speech API + live waveform */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, recording = false, dictBase = '', micStream = null, audioCtx = null, rafId = null;
+for (let i = 0; i < 48; i++) waveform.appendChild(document.createElement('span'));
+
+async function startDictation() {
+  if (recording) return;
+  if (!SR) { alert("Dictation isn't supported in this browser — try Chrome or Safari."); return; }
+  dictBase = input.value.trim() ? input.value.trim() + ' ' : '';
+  recording = true; composer.classList.add('recording');
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioCtx.createAnalyser(); analyser.fftSize = 128;
+    audioCtx.createMediaStreamSource(micStream).connect(analyser);
+    const bars = waveform.children, data = new Uint8Array(analyser.frequencyBinCount);
+    const draw = () => { analyser.getByteFrequencyData(data); for (let i = 0; i < bars.length; i++) bars[i].style.height = Math.max(10, (data[i % data.length] / 255) * 100) + '%'; rafId = requestAnimationFrame(draw); };
+    draw();
+  } catch (e) { /* no visualization; recognition may still work */ }
+  let finalT = '';
+  rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = ev => { let interim = ''; for (let i = ev.resultIndex; i < ev.results.length; i++) { const t = ev.results[i][0].transcript; if (ev.results[i].isFinal) finalT += t + ' '; else interim += t; } input.value = (dictBase + finalT + interim).replace(/\s+/g, ' ').trimStart(); autogrow(); };
+  rec.onend = () => { if (recording) { try { rec.start(); } catch (e) {} } };
+  try { rec.start(); } catch (e) {}
+}
+function stopDictation(keep) {
+  if (!recording) return;
+  recording = false; composer.classList.remove('recording');
+  if (rec) { rec.onend = null; try { rec.stop(); } catch (e) {} rec = null; }
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  if (!keep) input.value = dictBase.trim();
+  autogrow(); input.focus();
+}
+micBtn.addEventListener('click', startDictation);
+cancelRec.addEventListener('click', () => stopDictation(false));
+confirmRec.addEventListener('click', () => stopDictation(true));
+document.addEventListener('keydown', e => {
+  if (e.shiftKey && (e.metaKey || e.ctrlKey) && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); recording ? stopDictation(true) : startDictation(); }
+});
+
 /* ---------- minimal, safe markdown ---------- */
 function escapeHtml(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function inlineMd(t) {
@@ -340,7 +528,7 @@ function renderMarkdown(src) {
 function autogrow() {
   input.style.height = '0px';
   input.style.height = Math.min(input.scrollHeight, 200) + 'px';
-  send.disabled = busy || !input.value.trim();
+  send.disabled = busy || (!input.value.trim() && attached.length === 0);
 }
 input.addEventListener('input', autogrow);
 input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
@@ -348,10 +536,21 @@ input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) {
 /* ---------- scroll + messages ---------- */
 function atBottom() { return scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 120; }
 function scrollDown(force) { if (force || atBottom()) scroll.scrollTop = scroll.scrollHeight; }
-function addUser(text) {
+function addUser(text, atts) {
   const w = document.createElement('div'); w.className = 'msg user';
-  const b = document.createElement('div'); b.className = 'bubble'; b.textContent = text;
-  w.appendChild(b); chat.appendChild(w); scrollDown(true);
+  if (atts && atts.length) {
+    const ua = document.createElement('div'); ua.className = 'u-atts';
+    atts.forEach(f => {
+      const c = document.createElement('div'); c.className = 'u-att';
+      if (f.type && f.type.startsWith('image/')) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); c.appendChild(img); }
+      else { const ic = document.createElement('span'); ic.className = 'fico'; ic.innerHTML = FILE_ICON; c.appendChild(ic); }
+      const n = document.createElement('span'); n.className = 'n'; n.textContent = f.name; c.appendChild(n);
+      ua.appendChild(c);
+    });
+    w.appendChild(ua);
+  }
+  if (text) { const b = document.createElement('div'); b.className = 'bubble'; b.textContent = text; w.appendChild(b); }
+  chat.appendChild(w); scrollDown(true);
 }
 function addAssistant() {
   const w = document.createElement('div'); w.className = 'msg assistant';
@@ -370,9 +569,12 @@ document.querySelectorAll('.ex').forEach(e => {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const q = input.value.trim();
-  if (!q || busy) return;
+  if (recording) stopDictation(true);
+  const typed = input.value.trim();
+  const sentFiles = attached.slice();
+  if ((!typed && sentFiles.length === 0) || busy) return;
   busy = true;
+  const q = typed || 'Please take a look at the attached file.';
 
   if (!started) {                     // move composer to the bottom on first send
     started = true;
@@ -380,13 +582,16 @@ form.addEventListener('submit', async (e) => {
     document.body.classList.add('chatting');
   }
 
-  input.value = ''; autogrow(); send.disabled = true;
-  addUser(q);
+  input.value = ''; attached = []; renderAttachments(); autogrow(); send.disabled = true;
+  addUser(typed, sentFiles);
   const { wrap, prose } = addAssistant();
   let answer = '', first = true;
 
+  let atts = [];
+  try { atts = await Promise.all(sentFiles.map(async f => ({ name: f.name, mime: f.type, data: await fileToBase64(f) }))); } catch (err) {}
+
   try {
-    const resp = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, history }) });
+    const resp = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, history, attachments: atts }) });
     const reader = resp.body.getReader();
     const dec = new TextDecoder();
     let buf = '';
