@@ -23,6 +23,9 @@ KEEP_ALIVE = os.environ.get("GUNNGPT_KEEP_ALIVE", "30s")
 # Lower temperature = sticks to facts, less embellishment/hallucination.
 TEMPERATURE = float(os.environ.get("GUNNGPT_TEMPERATURE", "0.2"))
 
+# Cap answer length — shorter answers free the GPU faster (more concurrent users).
+MAX_TOKENS = int(os.environ.get("GUNNGPT_MAX_TOKENS", "600"))
+
 # ---- Retrieval ----
 TOP_K = int(os.environ.get("GUNNGPT_TOP_K", "8"))   # chunks fed to the model
 KEYWORD_WEIGHT = 0.3                                  # hybrid: keyword vs embedding
