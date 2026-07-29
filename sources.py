@@ -520,8 +520,62 @@ def wiki_docs():
     return docs
 
 
+def app_docs():
+    """Self-knowledge: what GunnGPT (this website/app) is, its pages, layout, and
+    features — so it can tell users what it does and where to find things."""
+    overview = (
+        "About GunnGPT — this website / this app. GunnGPT is the website and app you "
+        "are using right now. It is a free, student-built assistant and student "
+        "portal for Henry M. Gunn High School in Palo Alto, California. GunnGPT does "
+        "two main things: (1) it is a chatbot (this chat) that answers questions about "
+        "Gunn — the bell schedule, when school starts and ends, lunch and brunch "
+        "menus, courses, clubs, teachers and staff, the campus, and general school "
+        "info; and (2) it is a student portal with pages for the daily schedule, a "
+        "scannable lunch barcode, clubs, courses, and a campus map. Everything runs "
+        "locally on the school's own server — nothing you type in the chat leaves that "
+        "server, and there are no accounts or logins. Its schedule and campus data "
+        "come from WATT (gunnwatt.web.app). GunnGPT is NOT the same thing as gunn.one: "
+        "gunn.one is a separate grade-calculator website, while GunnGPT is this "
+        "schedule/info assistant. If someone asks 'who made this website', 'what is "
+        "this site', 'what can you do', or 'what is GunnGPT', this is the answer."
+    )
+    layout = (
+        "GunnGPT layout — the pages and where to find things. There is a sidebar on "
+        "the left with a navigation menu; you can collapse or expand it with the "
+        "button at the top (or by dragging its edge). The pages are:\n"
+        "- Home: the main page. It shows a live clock, today's date (tap the date to "
+        "open a calendar and jump to any day), the day of the week, and today's bell "
+        "schedule as colored period cards with the times, plus a live countdown to "
+        "when the current period or school ends. The chat box for asking GunnGPT "
+        "questions is at the bottom of the Home page.\n"
+        "- Barcode: your student ID barcode for buying/scanning lunch and brunch. Type "
+        "your student ID number, tap the barcode to show it fullscreen for scanning, "
+        "and use the + to add more barcodes.\n"
+        "- Clubs: browse every Gunn club, grouped by category, with day tabs "
+        "(Monday–Friday) and a search box. Tap a club to see its room, meeting day, "
+        "advisor, president, and description.\n"
+        "- Courses: browse every course in the Gunn catalog with a search box. Tap a "
+        "course to see its department, grade levels, length, UC approval, and "
+        "description.\n"
+        "- Map: an interactive map of the Gunn campus you can drag to pan and scroll "
+        "or double-click to zoom, to find buildings and room numbers.\n"
+        "- Settings: change the theme (light or dark mode), the time format (12-hour "
+        "or 24-hour), whether to show the clock, and whether to show Period 0 and "
+        "Period 8 on the schedule. Where to find X: schedule and bell times are on "
+        "Home; the lunch barcode is on the Barcode page; clubs on Clubs; classes on "
+        "Courses; buildings and rooms on Map; dark mode and other options in Settings."
+    )
+    return [
+        {"id": "app-about", "title": "About GunnGPT (this website)",
+         "url": "/", "source": "gunngpt-app", "text": overview},
+        {"id": "app-layout", "title": "GunnGPT pages & where to find things",
+         "url": "/", "source": "gunngpt-app", "text": layout},
+    ]
+
+
 def build_all():
     builders = [
+        ("about GunnGPT app", app_docs),
         ("core facts", core_facts_docs),
         ("academic calendar", calendar_docs),
         ("bell schedules", watt_schedule_docs),

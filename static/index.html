@@ -26,6 +26,117 @@
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
+  body.theme-dark {
+    --red: #e35d5d;
+    --red-hover: #ec7373;
+    --bg: #1b1b1e;
+    --fg: #f2f2f5;
+    --fg-soft: #c3c3c9;
+    --muted: #86868c;
+    --border: #2e2e33;
+    --border-strong: #414148;
+    --surface: #26262a;
+    --code-bg: #202024;
+    --sel: rgba(227, 93, 93, 0.30);
+  }
+  body.theme-dark header { background: rgba(27,27,30,0.75); }
+  body.theme-dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); background-clip: content-box; }
+  body.theme-dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); background-clip: content-box; }
+  body.theme-dark .opt.on { background: rgba(227,93,93,0.12); }
+  body.theme-dark .set-btn:hover { background: rgba(227,93,93,0.12); }
+
+  /* hide the home clock when disabled */
+  body.no-clock .sched-clock { display: none; }
+
+  /* ---------- theme toggle (yellow sun / gray moon on a plain track) ---------- */
+  .dn-toggle { border: none; padding: 0; background: none; cursor: pointer; display: inline-block; line-height: 0; transition: transform 0.1s var(--ease); }
+  .dn-toggle:active { transform: scale(0.95); }
+  .dn-track { display: block; position: relative; width: 66px; height: 32px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border-strong); }
+  .dn-knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #f6c945; box-shadow: 0 0 6px rgba(246,201,69,0.5); transition: transform 0.5s cubic-bezier(0.34,1.45,0.64,1), background 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  body.theme-dark .dn-knob { transform: translateX(34px); background: #b0b4bf; box-shadow: none; }
+
+  /* ---------- time-format toggle (12 / 24 in the knob, distinct colors) ---------- */
+  .clk-wrap { position: relative; display: inline-block; width: 66px; height: 32px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border-strong); cursor: pointer; user-select: none; }
+  .clk-knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 750; letter-spacing: -0.02em; transition: transform 0.5s cubic-bezier(0.34,1.5,0.64,1), background 0.35s var(--ease); }
+  .clk-wrap[data-fmt="24"] .clk-knob { transform: translateX(34px); background: #3b8ed0; }
+  .clk-num { display: inline-block; transition: transform 0.25s var(--ease), opacity 0.2s var(--ease); }
+  .clk-num.flip { transform: rotateX(90deg); opacity: 0; }
+
+  /* ---------- show-clock toggle ---------- */
+  .sc-toggle { border: none; padding: 0; background: none; cursor: pointer; line-height: 0; transition: transform 0.1s var(--ease); }
+  .sc-toggle:active { transform: scale(0.95); }
+  .sc-track { position: relative; display: block; width: 66px; height: 32px; border-radius: 999px; background: var(--border-strong); transition: background 0.25s var(--ease); }
+  .sc-toggle[data-on="1"] .sc-track { background: var(--red); }
+  .sc-knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.35s cubic-bezier(0.34,1.5,0.64,1); }
+  .sc-toggle[data-on="1"] .sc-knob { transform: translateX(34px); }
+  .sc-knob svg { width: 22px; height: 22px; color: #9a9aa0; transition: color 0.25s var(--ease); }
+  .sc-toggle[data-on="1"] .sc-knob svg { color: var(--red); }
+  .sc-sec { transform-origin: 12px 12px; }
+
+  /* ---------- popup modal (club/course detail + confirm dialog) ---------- */
+  .modal-back { position: fixed; inset: 0; z-index: 1200; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: backIn 0.2s var(--ease); }
+  .modal-back[hidden] { display: none; }
+  .modal-back.closing { animation: backOut 0.18s var(--ease) forwards; }
+  .modal { position: relative; background: var(--bg); border: 1px solid var(--border-strong); border-radius: 20px; width: 100%; max-width: 460px; max-height: 82vh; overflow-y: auto; padding: 28px 26px 30px; box-shadow: 0 28px 70px rgba(0,0,0,0.35); animation: modalIn 0.28s cubic-bezier(0.34,1.4,0.64,1); }
+  .modal-back.closing .modal { animation: modalOut 0.18s var(--ease) forwards; }
+  .modal-x { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border: none; background: none; color: var(--muted); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s var(--ease), color 0.12s var(--ease), transform 0.1s var(--ease); }
+  .modal-x:hover { background: var(--surface); color: var(--fg); }
+  .modal-x:active { transform: scale(0.9); }
+  .modal-x svg { width: 20px; height: 20px; }
+  .modal .detail-title { margin-top: 0; padding-right: 30px; }
+  .modal.modal-confirm { max-width: 320px; padding: 18px 18px 16px; border-radius: 16px; }
+  .confirm-msg { font-size: 15px; font-weight: 650; color: var(--fg); margin: 0 0 3px; }
+  .confirm-sub { font-size: 12.5px; color: var(--muted); margin-bottom: 16px; line-height: 1.45; }
+  .confirm-row { display: flex; gap: 8px; justify-content: flex-end; }
+  .confirm-btn { border: 1px solid var(--border-strong); background: var(--bg); color: var(--fg); border-radius: 9px; padding: 7px 15px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background 0.12s var(--ease), transform 0.1s var(--ease); }
+  .confirm-btn:hover { background: var(--surface); }
+  .confirm-btn:active { transform: scale(0.96); }
+  .confirm-btn.danger { background: var(--red); color: #fff; border-color: var(--red); }
+  .confirm-btn.danger:hover { background: var(--red-hover); }
+  @keyframes backIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes backOut { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
+  @keyframes modalOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(8px) scale(0.98); } }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+  .barcode-item { animation: popIn 0.3s var(--ease); }
+  .sched-card { position: relative; }
+  .sched-card.now::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: nowRing 1.9s ease-out infinite; }
+  @keyframes nowRing { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); } 70%, 100% { box-shadow: 0 0 0 9px rgba(255,255,255,0); } }
+
+  /* ---------- micro-interactions ---------- */
+  body { transition: background-color 0.4s var(--ease), color 0.4s var(--ease); }
+  #sidebar { transition: width 0.2s var(--ease), background-color 0.4s var(--ease), border-color 0.4s var(--ease); }
+  .side-item { transition: background 0.15s var(--ease), transform 0.1s var(--ease); }
+  .side-item:active { transform: scale(0.96); }
+  .logo-circle { transition: transform 0.2s var(--ease), background 0.4s var(--ease); }
+  .side-logo-btn:active .logo-circle { transform: scale(0.88); }
+  .card { transition: background 0.14s var(--ease), border-color 0.14s var(--ease), transform 0.14s var(--ease), box-shadow 0.14s var(--ease); }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  .card:active { transform: translateY(0); }
+  .sched-card { transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease); }
+  .sched-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.14); }
+  .set-btn, .view-btn, .map-tool, .bc-add, .opt { transition: background 0.12s var(--ease), border-color 0.12s var(--ease), color 0.12s var(--ease), transform 0.1s var(--ease); }
+  .set-btn:active, .view-btn:active, .map-tool:active, .bc-add:active, .opt:active { transform: scale(0.96); }
+  .cal-cell:active { transform: scale(0.85); }
+  .sched-arrow:active, .cal-nav:active, .bc-btn:active { transform: scale(0.86); }
+  .send:not(:disabled):active { transform: scale(0.9); }
+  .row, .day-tab, .set-tab { transition: color 0.12s var(--ease), background 0.12s var(--ease), border-color 0.12s var(--ease), transform 0.1s var(--ease); }
+  .day-tab:active, .set-tab:active { transform: scale(0.96); }
+
+  /* view enter animation */
+  @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  body[data-tab="home"] #scroll,
+  body[data-tab="chat"] #chatView,
+  body[data-tab="barcode"] #barcodeView,
+  body[data-tab="clubs"] #clubsView,
+  body[data-tab="courses"] #coursesView,
+  body[data-tab="map"] #mapView,
+  body[data-tab="settings"] #settingsView { animation: viewIn 0.3s var(--ease); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
@@ -36,7 +147,7 @@
     color: var(--fg);
     background: var(--bg);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -72,6 +183,160 @@
   .wordmark .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
   .wordmark .brand { color: var(--red); }
 
+  /* ---------- tab bar ---------- */
+  .tabbar { display: flex; gap: 2px; overflow-x: auto; margin-left: 16px; }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab { border: none; background: none; padding: 6px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 550; color: var(--muted); cursor: pointer; white-space: nowrap; transition: background 0.15s var(--ease), color 0.15s var(--ease); }
+  .tab:hover { background: var(--surface); color: var(--fg); }
+  .tab.active { color: var(--red); background: rgba(179,27,27,0.08); }
+
+  /* ---------- sidebar ---------- */
+  #main { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; position: relative; }
+  #sidebar {
+    flex: none; width: 212px; display: flex; flex-direction: column; position: relative;
+    border-right: 1px solid var(--border); background: var(--bg);
+    transition: width 0.2s var(--ease); overflow: hidden;
+  }
+  body.collapsed #sidebar { width: 60px; }
+  /* drag handle straddles the sidebar/main boundary (lives inside #main) */
+  .side-resize { position: absolute; top: 0; left: -8px; width: 16px; height: 100%; cursor: ew-resize; z-index: 50; touch-action: none; }
+  .side-resize::after { content: ''; position: absolute; top: 0; left: 7px; width: 2px; height: 100%; background: var(--fg-soft); opacity: 0; transition: opacity 0.15s var(--ease); }
+  .side-resize:hover::after, .side-resize.rz-active::after { opacity: 0.4; }
+  @media (max-width: 640px) { .side-resize { display: none; } }
+  .side-top { display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 14px; flex: none; }
+  body.collapsed .side-top { justify-content: center; padding: 0; }
+  .side-logo-btn { position: relative; width: 34px; height: 34px; border: none; background: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; flex: none; }
+  .logo-circle { width: 30px; height: 30px; border-radius: 9px; background: var(--red); color: #fff; font-weight: 800; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; letter-spacing: -0.02em; }
+  .logo-expand { position: absolute; width: 20px; height: 20px; color: var(--fg-soft); display: none; }
+  body.collapsed #sideToggle { display: none; }
+  body.collapsed .side-logo-btn:hover { background: var(--surface); }
+  body.collapsed .side-logo-btn:hover .logo-circle { display: none; }
+  body.collapsed .side-logo-btn:hover .logo-expand { display: block; }
+  .side-btn { width: 34px; height: 34px; border: none; background: none; border-radius: 8px; color: var(--fg-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s var(--ease); flex: none; }
+  .side-btn:hover { background: var(--surface); }
+  .side-btn svg { width: 20px; height: 20px; }
+  .side-nav { display: flex; flex-direction: column; gap: 2px; padding: 8px; }
+  .side-item { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border: none; background: none; border-radius: 9px; font-size: 14.5px; font-weight: 500; color: var(--fg); cursor: pointer; text-align: left; white-space: nowrap; transition: background 0.15s var(--ease); }
+  .side-item:hover { background: var(--surface); }
+  .side-item.active { background: var(--surface); font-weight: 600; }
+  .side-item svg { width: 20px; height: 20px; flex: none; color: var(--fg-soft); }
+  .side-item.active svg { color: var(--red); }
+  body.collapsed .side-item { justify-content: center; padding: 9px 0; }
+  body.collapsed .side-item span { display: none; }
+
+  @media (max-width: 640px) {
+    #sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+    body:not(.collapsed) #sidebar { box-shadow: 0 0 40px rgba(0,0,0,0.18); }
+    #main { margin-left: 60px; }
+  }
+
+  /* ---------- tab views ---------- */
+  .view { flex: 1 1 auto; overflow-y: auto; display: none; }
+  body:not([data-tab="home"]) #scroll { display: none; }
+  body[data-tab="chat"] #chatView { display: flex; flex-direction: column; overflow: hidden; }
+  body[data-tab="barcode"] #barcodeView { display: block; }
+  .view-inner { max-width: 560px; margin: 0 auto; padding: 32px 20px 60px; }
+  .view-title { font-size: 24px; font-weight: 650; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .view-sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .view-btn { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 550; color: var(--fg); cursor: pointer; transition: background 0.15s var(--ease); }
+  .view-btn:hover { background: var(--surface); }
+
+  /* barcode */
+  .barcode-item { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 14px; text-align: center; }
+  .bc-btn { position: absolute; top: 11px; right: 11px; width: 30px; height: 30px; border: none; background: none; color: var(--muted); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s var(--ease), color 0.12s var(--ease); z-index: 2; }
+  .bc-btn:hover { background: var(--bg); color: var(--red); }
+  .bc-btn svg { width: 20px; height: 20px; }
+  .bc-strip { background: #fff; border-radius: 10px; padding: 14px 14px 10px; max-width: 330px; margin: 4px auto 0; }
+  .bc-canvas { display: block; width: 100%; max-width: 300px; height: 66px; margin: 0 auto; image-rendering: pixelated; image-rendering: crisp-edges; cursor: pointer; }
+  .bc-value { display: block; width: 100%; max-width: 260px; margin: 14px auto 2px; border: none; background: none; color: var(--fg); font-size: 19px; font-weight: 650; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: 1px; caret-color: var(--red); }
+  .bc-value:focus { outline: none; }
+  .bc-add { width: 100%; border: 1.5px dashed var(--border-strong); background: none; border-radius: 14px; padding: 13px; font-size: 26px; font-weight: 300; line-height: 1; color: var(--muted); cursor: pointer; transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease); }
+  .bc-add:hover { background: var(--surface); color: var(--fg); border-color: var(--fg-soft); }
+  /* fullscreen barcode viewer */
+  #bcModal { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+  #bcModal[hidden] { display: none; }
+  #bcModalCanvas { width: 92vw; max-width: 820px; height: 40vh; max-height: 300px; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .bc-modal-hint { position: fixed; bottom: 26px; font-size: 13px; color: var(--muted); }
+
+  /* clubs + courses lists */
+  body[data-tab="clubs"] #clubsView { display: block; }
+  body[data-tab="courses"] #coursesView { display: block; }
+  body[data-tab="map"] #mapView { display: flex; }
+  body[data-tab="settings"] #settingsView { display: block; }
+
+  /* map */
+  #mapView { flex-direction: column; overflow: hidden; }
+  .map-canvas { flex: 1 1 auto; position: relative; overflow: hidden; background: var(--surface); cursor: grab; touch-action: none; }
+  .map-canvas.dragging { cursor: grabbing; }
+  .map-canvas img { position: absolute; top: 0; left: 0; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; max-width: none; }
+  .map-tools { position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
+  .map-tool { width: 40px; height: 40px; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 10px; font-size: 22px; font-weight: 400; line-height: 1; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.12s var(--ease); }
+  .map-tool:hover { background: var(--surface); }
+  .map-hint { position: absolute; left: 18px; bottom: 16px; font-size: 12.5px; color: var(--muted); z-index: 5; pointer-events: none; }
+
+  /* settings */
+  #settingsView .view-inner { max-width: 760px; }
+  .set-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 0 0 22px -16px; flex-wrap: wrap; }
+  .set-tab { border: none; background: none; font-size: 14.5px; font-weight: 550; color: var(--muted); padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.12s var(--ease); }
+  .set-tab:hover { color: var(--fg); }
+  .set-tab.active { color: var(--red); border-bottom-color: var(--red); }
+  .set-panel[hidden] { display: none; }
+  .set-h { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 26px 0 12px; }
+  .set-h:first-child { margin-top: 4px; }
+  .opt-list { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border: 1px solid var(--border); background: var(--bg); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: background 0.12s var(--ease), border-color 0.12s var(--ease); }
+  .opt:hover { background: var(--surface); }
+  .opt.on { border-color: var(--red); background: rgba(179,27,27,0.05); }
+  .opt-check { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border-strong); display: flex; align-items: center; justify-content: center; transition: border-color 0.12s var(--ease), background 0.12s var(--ease); }
+  .opt.on .opt-check { border-color: var(--red); background: var(--red); }
+  .opt-check svg { width: 13px; height: 13px; color: #fff; opacity: 0; transition: opacity 0.12s var(--ease); }
+  .opt.on .opt-check svg { opacity: 1; }
+  .opt-text b { display: block; font-size: 14.5px; font-weight: 600; color: var(--fg); }
+  .opt-text i { font-style: normal; font-size: 13px; color: var(--muted); }
+  .set-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .set-row:last-of-type { border-bottom: none; }
+  .set-label { font-size: 14.5px; font-weight: 600; color: var(--fg); }
+  .set-desc { font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+  .set-desc code { background: var(--code-bg); padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+  .switch { position: relative; width: 46px; height: 27px; flex: none; cursor: pointer; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .switch .track { position: absolute; inset: 0; background: var(--border-strong); border-radius: 999px; transition: background 0.15s var(--ease); }
+  .switch .thumb { position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.15s var(--ease); }
+  .switch input:checked ~ .track { background: var(--red); }
+  .switch input:checked ~ .thumb { transform: translateX(19px); }
+  .set-btn { border: 1px solid var(--border-strong); background: var(--bg); color: var(--red); border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.12s var(--ease); margin-right: 10px; }
+  .set-btn:hover { background: rgba(179,27,27,0.06); }
+  .set-about { font-size: 14.5px; color: var(--fg-soft); line-height: 1.7; }
+  .set-about a { color: var(--red); }
+  .pn-grade { display: inline-block; font-size: 10.5px; font-weight: 700; background: rgba(255,255,255,0.28); color: #fff; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+  #clubsView .view-inner, #coursesView .view-inner { max-width: 1040px; }
+  .list-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .list-head .view-title { margin: 0; }
+  .list-search { flex: 1 1 220px; max-width: 340px; padding: 10px 14px; border: 1px solid var(--border-strong); border-radius: 999px; font-size: 14.5px; color: var(--fg); background: var(--bg); }
+  .list-search:focus { outline: none; border-color: #c4c4c4; }
+  .day-tabs { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 22px; border-bottom: 1px solid var(--border); }
+  .day-tab { border: none; background: none; font-size: 14px; font-weight: 550; color: var(--muted); padding: 9px 15px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.12s var(--ease); }
+  .day-tab:hover { color: var(--fg); }
+  .day-tab.active { color: var(--red); border-bottom-color: var(--red); }
+  .group-head { font-size: 18px; font-weight: 650; color: var(--fg); letter-spacing: -0.01em; margin: 26px 0 12px; }
+  .group-head:first-child { margin-top: 0; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-bottom: 4px; }
+  .card { text-align: left; border: 1px solid var(--border); background: var(--bg); border-radius: 12px; padding: 14px 15px; cursor: pointer; transition: background 0.12s var(--ease), border-color 0.12s var(--ease); }
+  .card:hover { background: var(--surface); border-color: var(--border-strong); }
+  .card-name { font-size: 14.5px; font-weight: 600; color: var(--fg); margin-bottom: 6px; line-height: 1.3; }
+  .card-meta { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .detail { max-width: 620px; }
+  .list-empty { color: var(--muted); text-align: center; padding: 30px; font-size: 14px; }
+  .detail-back { display: inline-flex; align-items: center; gap: 5px; border: none; background: none; color: var(--fg-soft); font-size: 14px; cursor: pointer; padding: 4px 8px 4px 0; margin-bottom: 14px; }
+  .detail-back:hover { color: var(--fg); }
+  .detail-title { font-size: 23px; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 12px; }
+  .detail-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .badge { font-size: 12.5px; font-weight: 550; padding: 5px 11px; border-radius: 999px; background: var(--surface); color: var(--fg-soft); }
+  .badge.red { background: rgba(179,27,27,0.09); color: var(--red); }
+  .detail-info { font-size: 14px; color: var(--fg-soft); margin-bottom: 5px; }
+  .detail-info strong { color: var(--fg); font-weight: 600; }
+  .detail-desc { font-size: 14.5px; color: var(--fg); line-height: 1.6; margin-top: 16px; }
+
   /* ---------- scroll area ---------- */
   #scroll {
     flex: 1 1 auto;
@@ -88,38 +353,54 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: var(--sp-5);
+    justify-content: flex-start;
     width: 100%;
-    max-width: 640px;
+    max-width: 560px;
     margin: 0 auto;
-    padding: 24px 20px 64px;
+    padding: 44px 20px 32px;
     animation: fade 0.35s var(--ease) both;
   }
-  body.chatting #hero { display: none; }
   .greeting {
     font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
     text-align: center; margin: 0; line-height: 1.25;
   }
 
-  /* live schedule widget */
-  .sched-card {
-    width: 100%; max-width: 460px; margin: 0 auto;
-    background: var(--bg); border: 1px solid var(--border); border-radius: 16px;
-    padding: 16px 20px; text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-  }
-  .sched-clock { font-size: 32px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .sched-status { margin-top: 3px; font-size: 14.5px; color: var(--fg-soft); }
+  /* live schedule widget (WATT-style, colored period cards) */
+  .sched { width: 100%; max-width: 500px; margin: 0 auto; }
+  .sched-clock { font-size: 34px; font-weight: 650; letter-spacing: -0.02em; text-align: center; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .sched-nav { position: relative; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 8px; }
+  .sched-arrow { width: 32px; height: 32px; border: none; background: none; border-radius: 50%; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s var(--ease), color 0.15s var(--ease); }
+  .sched-arrow svg { width: 18px; height: 18px; }
+  .sched-arrow:hover { background: var(--surface); color: var(--fg); }
+  .sched-datepill { font-size: 13.5px; font-weight: 550; color: var(--fg); background: var(--surface); border: none; padding: 6px 15px; border-radius: 999px; min-width: 148px; text-align: center; cursor: pointer; transition: background 0.15s var(--ease); }
+  .sched-datepill:hover { background: var(--border); }
+  /* date-picker popup */
+  .sched-cal { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 40; width: 296px; background: var(--bg); border: 1.5px solid var(--border-strong); border-radius: 18px; box-shadow: 0 16px 40px rgba(0,0,0,0.16); padding: 14px; }
+  .sched-cal[hidden] { display: none; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-title { font-size: 15.5px; font-weight: 750; letter-spacing: -0.01em; color: var(--fg); }
+  .cal-nav { width: 32px; height: 32px; border: none; background: var(--surface); border-radius: 10px; color: var(--fg-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .cal-nav:hover { background: var(--border); color: var(--fg); }
+  .cal-nav svg { width: 18px; height: 18px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+  .cal-dow { font-size: 10.5px; font-weight: 700; color: var(--muted); text-align: center; padding: 3px 0 5px; text-transform: uppercase; }
+  .cal-cell { border: none; background: none; border-radius: 9px; padding: 7px 0; font-size: 13.5px; font-weight: 600; color: var(--fg); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.1s var(--ease); }
+  .cal-cell:hover { background: var(--surface); }
+  .cal-cell.blank { visibility: hidden; }
+  .cal-cell.weekend { color: var(--muted); font-weight: 500; }
+  .cal-cell.today { color: var(--red); font-weight: 800; }
+  .cal-cell.sel { background: var(--red); color: #fff; font-weight: 750; }
+  .cal-cell.sel:hover { background: var(--red); }
+  .sched-day { text-align: center; font-size: 27px; font-weight: 650; letter-spacing: -0.02em; margin-top: 12px; }
+  .sched-status { text-align: center; font-size: 14.5px; color: var(--fg-soft); margin-top: 2px; }
   .sched-status .hl { color: var(--red); font-weight: 600; }
-  .sched-bar { height: 5px; background: var(--surface); border-radius: 999px; margin: 12px 0 2px; overflow: hidden; }
-  .sched-bar.hidden { display: none; }
-  .sched-fill { height: 100%; width: 0%; background: var(--red); border-radius: 999px; transition: width 1s linear; }
-  .sched-list { margin-top: 12px; display: flex; flex-direction: column; gap: 1px; text-align: left; }
-  .sched-list.hidden { display: none; }
-  .sched-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); padding: 4px 8px; border-radius: 7px; }
-  .sched-row.now { background: rgba(179,27,27,0.08); color: var(--fg); font-weight: 600; }
-  .sched-row .rt { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sched-cards { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .sched-cards:empty { display: none; }
+  .sched-card { border-radius: 14px; padding: 12px 15px; color: #fff; }
+  .sched-card.now { box-shadow: inset 0 0 0 2.5px rgba(255,255,255,0.9); }
+  .sched-card .pn { font-size: 15.5px; font-weight: 650; }
+  .sched-card .pt { font-size: 13px; opacity: 0.92; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .sched-card .pd { font-size: 12.5px; opacity: 0.82; margin-top: 1px; font-variant-numeric: tabular-nums; }
   #hero form { width: 100%; }
   .hero-examples {
     display: flex; flex-direction: column; gap: 2px; width: 100%; margin-top: 2px;
@@ -144,6 +425,22 @@
   .ex:hover .x { opacity: 1; }
   .ex .x:hover { background: rgba(0,0,0,0.06); color: var(--fg); }
   .ex .x svg { width: 16px; height: 16px; }
+
+  /* ---------- chat tab (greeting + suggestions + messages) ---------- */
+  #chatScroll { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; }
+  #chatIntro { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+  body.chatting #chatIntro { display: none; }
+  .intro-inner { width: 100%; max-width: 660px; display: flex; flex-direction: column; }
+  .chat-greeting { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; text-align: center; margin-bottom: 22px; }
+  #composerAnchorTop { width: 100%; }
+  /* composer sits inline (no dock chrome) while in the centered intro */
+  #composerAnchorTop #bottomBar { position: static; background: none; padding: 0; }
+  .chat-suggests { display: flex; flex-direction: column; gap: 1px; width: 100%; margin-top: 16px; }
+  .suggest { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border: none; background: none; border-radius: 11px; padding: 13px 12px; font-size: 15px; font-weight: 450; color: var(--fg-soft); cursor: pointer; transition: background 0.12s var(--ease), color 0.12s var(--ease); animation: msgIn 0.28s var(--ease) both; }
+  .suggest:hover { background: var(--surface); color: var(--fg); }
+  .suggest .s-ico { flex: none; display: flex; color: var(--muted); }
+  .suggest .s-ico svg { width: 20px; height: 20px; }
+  .suggest:hover .s-ico { color: var(--fg-soft); }
 
   /* ---------- messages ---------- */
   #chat { max-width: var(--maxw); width: 100%; margin: 0 auto; padding: var(--sp-6) var(--sp-5) var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-6); }
@@ -213,7 +510,6 @@
 
   /* ---------- composer ---------- */
   #bottomBar { flex: none; position: sticky; bottom: 0; background: linear-gradient(to top, var(--bg) 62%, rgba(255,255,255,0)); padding: var(--sp-2) var(--sp-4) var(--sp-3); }
-  body:not(.chatting) #bottomBar { display: none; }
   form { max-width: var(--maxw); margin: 0 auto; }
   .composer {
     display: flex; flex-direction: column;
@@ -252,7 +548,8 @@
   }
   .send:hover:not(:disabled) { background: var(--red-hover); }
   .send:active:not(:disabled) { transform: scale(0.92); }
-  .send:disabled { background: #dcdcdc; cursor: default; }
+  .send:disabled { background: #dcdcdc; color: #fbfbfb; cursor: default; }
+  body.theme-dark .send:disabled { background: #34343a; color: #57575e; }
   .send svg { width: 19px; height: 19px; display: block; }
 
   /* tooltips (hidden on touch devices) */
@@ -319,7 +616,6 @@
   .u-att .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .disclaimer { max-width: var(--maxw); margin: 7px auto 0; text-align: center; font-size: 11.5px; color: var(--muted); }
-  body:not(.chatting) .disclaimer { display: none; }
 
   @media (max-width: 640px) {
     #chat { padding: var(--sp-5) var(--sp-4) var(--sp-3); gap: var(--sp-5); }
@@ -328,21 +624,159 @@
   }
 </style>
 </head>
-<body>
-<header>
-  <span class="wordmark"><span class="dot"></span><span>Gunn<span class="brand">GPT</span></span></span>
-</header>
+<body data-tab="home">
+<aside id="sidebar">
+  <div class="side-top">
+    <button class="side-logo-btn" id="logoBtn" type="button" aria-label="Expand sidebar">
+      <span class="logo-circle">G</span>
+      <svg class="logo-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+    </button>
+    <button class="side-btn" id="sideToggle" type="button" title="Close sidebar" aria-label="Collapse sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item active" type="button" data-tab="home" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg><span>Home</span></button>
+    <button class="side-item" type="button" data-tab="chat" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l2-5.7a8.4 8.4 0 0 1-.9-3.8A8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg><span>Chat</span></button>
+    <button class="side-item" type="button" data-tab="barcode" title="Barcode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12"/></svg><span>Barcode</span></button>
+    <button class="side-item" type="button" data-tab="clubs" title="Clubs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.7-5 6-5s6 2 6 5"/><path d="M16 5.5a3 3 0 0 1 0 5M21.5 20c0-2.3-1.4-4-3.5-4.6"/></svg><span>Clubs</span></button>
+    <button class="side-item" type="button" data-tab="courses" title="Courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg><span>Courses</span></button>
+    <button class="side-item" type="button" data-tab="map" title="Map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg><span>Map</span></button>
+    <button class="side-item" type="button" data-tab="settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
+  </nav>
+</aside>
 
+<main id="main">
+<div class="side-resize" id="sideResize" title="Drag to expand/collapse"></div>
 <div id="scroll">
   <div id="hero">
-    <div class="sched-card" id="schedCard">
+    <div class="sched" id="sched">
       <div class="sched-clock" id="schedClock">—</div>
+      <div class="sched-nav">
+        <button class="sched-arrow" id="schedPrev" type="button" aria-label="Previous day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="sched-datepill" id="schedDate" type="button" aria-label="Pick a date"></button>
+        <button class="sched-arrow" id="schedNext" type="button" aria-label="Next day"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        <div class="sched-cal" id="schedCal" hidden></div>
+      </div>
+      <div class="sched-day" id="schedDay"></div>
       <div class="sched-status" id="schedStatus"></div>
-      <div class="sched-bar hidden" id="schedBar"><div class="sched-fill" id="schedFill"></div></div>
-      <div class="sched-list hidden" id="schedList"></div>
+      <div class="sched-cards" id="schedCards"></div>
     </div>
-    <h1 class="greeting" id="greeting"></h1>
-    <form id="form">
+  </div>
+</div>
+
+<div id="barcodeView" class="view">
+  <div class="view-inner">
+    <h2 class="view-title">Barcode</h2>
+    <div id="barcodeList"></div>
+    <button class="bc-add" id="addBarcode" type="button" aria-label="Add barcode">+</button>
+  </div>
+</div>
+
+<div id="clubsView" class="view">
+  <div class="view-inner">
+    <div class="list-main">
+      <div class="list-head">
+        <h2 class="view-title">Clubs</h2>
+        <input class="list-search" type="text" placeholder="Search clubs…" autocomplete="off">
+      </div>
+      <div class="list"></div>
+    </div>
+    <div class="detail" hidden></div>
+  </div>
+</div>
+
+<div id="coursesView" class="view">
+  <div class="view-inner">
+    <div class="list-main">
+      <div class="list-head">
+        <h2 class="view-title">Courses</h2>
+        <input class="list-search" type="text" placeholder="Search courses…" autocomplete="off">
+      </div>
+      <div class="list"></div>
+    </div>
+    <div class="detail" hidden></div>
+  </div>
+</div>
+
+<div id="mapView" class="view">
+  <div class="map-canvas" id="mapCanvas">
+    <img id="mapImg" src="/campus-map.png" alt="Gunn campus map">
+    <div class="map-hint">Drag to pan · scroll to zoom</div>
+    <div class="map-tools">
+      <button class="map-tool" id="mapIn" type="button" aria-label="Zoom in">+</button>
+      <button class="map-tool" id="mapOut" type="button" aria-label="Zoom out">−</button>
+      <button class="map-tool" id="mapFit" type="button" aria-label="Reset" title="Reset"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5a2 2 0 0 1 2-2h4M21 9V5a2 2 0 0 0-2-2h-4M3 15v4a2 2 0 0 0 2 2h4M21 15v4a2 2 0 0 1-2 2h-4"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<div id="settingsView" class="view">
+  <div class="view-inner">
+    <h2 class="view-title">Settings</h2>
+    <div class="set-tabs" id="setTabs">
+      <button class="set-tab active" type="button" data-stab="appearance">Appearance</button>
+      <button class="set-tab" type="button" data-stab="features">Features</button>
+      <button class="set-tab" type="button" data-stab="about">About</button>
+    </div>
+
+    <div class="set-panel" data-stab="appearance">
+      <div class="set-row">
+        <div><div class="set-label">Theme</div><div class="set-desc">Switch between light and dark mode.</div></div>
+        <button class="dn-toggle" id="themeToggle" type="button" role="switch" aria-label="Toggle dark mode">
+          <span class="dn-track"><span class="dn-knob"></span></span>
+        </button>
+      </div>
+      <div class="set-row">
+        <div><div class="set-label">Time format</div><div class="set-desc">Show times as 12-hour or 24-hour.</div></div>
+        <div class="clk-wrap" id="timeToggle" data-fmt="12" role="switch" tabindex="0" aria-label="Toggle time format">
+          <span class="clk-knob"><span class="clk-num" id="clkNum">12</span></span>
+        </div>
+      </div>
+      <div class="set-row">
+        <div><div class="set-label">Show clock</div><div class="set-desc">Display the live clock on the home page.</div></div>
+        <button class="sc-toggle" id="togClock" type="button" role="switch" data-on="1" aria-label="Toggle clock">
+          <span class="sc-track"><span class="sc-knob"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="12" x2="12" y2="6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line class="sc-sec" x1="12" y1="12" x2="17.5" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="set-panel" data-stab="features" hidden>
+      <div class="set-row">
+        <div><div class="set-label">Show Period 0</div><div class="set-desc">Displays <code>Period 0</code> on the schedule.</div></div>
+        <label class="switch"><input type="checkbox" id="tog0"><span class="track"></span><span class="thumb"></span></label>
+      </div>
+      <div class="set-row">
+        <div><div class="set-label">Show Period 8</div><div class="set-desc">Displays <code>Period 8</code> on the schedule.</div></div>
+        <label class="switch"><input type="checkbox" id="tog8"><span class="track"></span><span class="thumb"></span></label>
+      </div>
+    </div>
+
+    <div class="set-panel" data-stab="about" hidden>
+      <p class="set-about"><strong>GunnGPT</strong> is a local assistant and student portal for Henry M. Gunn High School — schedule, lunch, courses, clubs, staff, and a barcode for brunch &amp; lunch, plus a chatbot that answers questions about Gunn.</p>
+      <p class="set-about">Schedule and campus data come from <a href="https://gunnwatt.web.app" target="_blank" rel="noopener">WATT</a>. All chat runs locally — nothing you type leaves the school's server. Grade-specific periods will personalize automatically once Schoology sign-in is added.</p>
+      <p class="set-about" style="color:var(--muted)">Preferences are saved on this device.</p>
+    </div>
+  </div>
+</div>
+
+<div id="bcModal" hidden>
+  <canvas id="bcModalCanvas"></canvas>
+  <div class="bc-modal-hint">Tap anywhere to close</div>
+</div>
+
+<div id="chatView" class="view">
+  <div id="chatScroll">
+    <div id="chatIntro">
+      <div class="intro-inner">
+        <div class="chat-greeting" id="chatGreeting">How can I help?</div>
+        <div id="composerAnchorTop"></div>
+        <div class="chat-suggests" id="chatSuggests"></div>
+      </div>
+    </div>
+    <div id="chat"></div>
+  </div>
+  <div id="composerAnchorBottom"></div>
+  <div id="bottomBar">
+  <form id="form">
       <div class="composer" id="composer">
         <div class="attachments" id="attachments"></div>
         <div class="input-row">
@@ -353,7 +787,7 @@
               <button type="button" id="uploadItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Add photos &amp; files</button>
             </div>
           </div>
-          <textarea id="input" rows="1" placeholder="Ask about Gunn…" autocomplete="off" autofocus></textarea>
+          <textarea id="input" rows="1" placeholder="Ask GunnGPT anything about school…" autocomplete="off"></textarea>
           <div class="tool-wrap">
             <button class="tool" id="micBtn" type="button" aria-label="Dictate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
             <span class="tip tip-end">Dictate <kbd id="dictateKbd"></kbd></span>
@@ -371,109 +805,344 @@
         </div>
         <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.md,.csv" multiple hidden>
       </div>
-    </form>
-    <div class="hero-examples">
-      <div class="ex" role="button" tabindex="0">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v6a2 2 0 0 0 4 0V3M7 3v18"/><path d="M17 3c-1.66 0-3 1.79-3 4s1.34 4 3 4v10"/></svg></span>
-        <span class="ex-text">What's for lunch</span>
-        <button class="x" type="button" aria-label="Dismiss"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      </div>
-      <div class="ex" role="button" tabindex="0">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg></span>
-        <span class="ex-text">When does school end</span>
-        <button class="x" type="button" aria-label="Dismiss"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      </div>
-      <div class="ex" role="button" tabindex="0">
-        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/></svg></span>
-        <span class="ex-text">When's the next day off</span>
-        <button class="x" type="button" aria-label="Dismiss"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      </div>
-    </div>
+  </form>
   </div>
-  <div id="chat"></div>
 </div>
-
-<div id="bottomBar">
-  <div class="disclaimer">GunnGPT can make mistakes. Check important info.</div>
-</div>
+</main>
 
 <script>
-// Three greetings, one chosen at random each load (equal probability).
-const GREETINGS = [
-  "Hey, how can I help?",
-  "Hi, how's it going?",
-  "Hey there, Gunn student!",
-];
 const scroll = document.getElementById('scroll');
 const chat = document.getElementById('chat');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
 const send = document.getElementById('send');
-const bottomBar = document.getElementById('bottomBar');
-const disclaimer = bottomBar.querySelector('.disclaimer');
 let history = [];
 let busy = false;
 let started = false;
 
-document.getElementById('greeting').textContent =
-  GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
-
-/* ---------- live schedule widget ---------- */
+/* ---------- live schedule widget (colored cards + date nav) ---------- */
 (function initSchedule() {
-  const clockEl = document.getElementById('schedClock');
-  const statusEl = document.getElementById('schedStatus');
-  const barEl = document.getElementById('schedBar');
-  const fillEl = document.getElementById('schedFill');
-  const listEl = document.getElementById('schedList');
-  let sched = null;
-
-  const fmtClock = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  const fmtTime = min => { let h = Math.floor(min / 60), m = min % 60; const ap = h < 12 ? 'AM' : 'PM'; h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')} ${ap}`; };
+  const el = id => document.getElementById(id);
+  const clockEl = el('schedClock'), dateEl = el('schedDate'), dayEl = el('schedDay'),
+        statusEl = el('schedStatus'), cardsEl = el('schedCards');
+  const PALETTE = ['#8e5bb5', '#e05a52', '#1f9c86', '#3b8ed0', '#e0863c', '#7d5fc4', '#159a80', '#c9573e', '#2f7fc4'];
+  const colorFor = name => { const m = /^Period (\d)/.exec(name); return m ? PALETTE[(+m[1]) % PALETTE.length] : '#5a5a63'; };
+  const use24 = () => localStorage.getItem('gunngpt_time24') === '1';
+  const fmtTime = min => { let h = Math.floor(min / 60), m = min % 60; if (use24()) return `${h}:${String(m).padStart(2, '0')}`; const ap = h < 12 ? 'AM' : 'PM'; h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')} ${ap}`; };
   const fmtDur = sec => { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60; return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`; };
 
-  function renderList() {
-    listEl.innerHTML = sched.periods.map(p =>
-      `<div class="sched-row" data-s="${p.start}" data-e="${p.end}"><span>${p.name}</span><span class="rt">${fmtTime(p.start)} – ${fmtTime(p.end)}</span></div>`).join('');
+  let view = new Date(); view.setHours(0, 0, 0, 0);
+  const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+  const isToday = () => view.getTime() === today0.getTime();
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  let data = null;
+
+  function load() {
+    dateEl.textContent = view.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+    dayEl.textContent = view.toLocaleDateString([], { weekday: 'long' });
+    fetch('/api/today?date=' + iso(view)).then(r => r.json()).then(d => { data = d; render(); }).catch(() => {});
+  }
+  window.addEventListener('gunngpt:prefs', load);
+
+  /* ---- interactive date picker ---- */
+  const calEl = el('schedCal');
+  let calMonth = new Date(view.getFullYear(), view.getMonth(), 1);
+  const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function renderCal() {
+    const y = calMonth.getFullYear(), mo = calMonth.getMonth();
+    const first = new Date(y, mo, 1).getDay(), days = new Date(y, mo + 1, 0).getDate();
+    let cells = '';
+    for (const d of ['S', 'M', 'T', 'W', 'T', 'F', 'S']) cells += `<div class="cal-dow">${d}</div>`;
+    for (let i = 0; i < first; i++) cells += '<div class="cal-cell blank"></div>';
+    for (let day = 1; day <= days; day++) {
+      const dd = new Date(y, mo, day), wknd = dd.getDay() === 0 || dd.getDay() === 6;
+      const cls = 'cal-cell' + (wknd ? ' weekend' : '') + (sameDay(dd, today0) ? ' today' : '') + (sameDay(dd, view) ? ' sel' : '');
+      cells += `<button class="${cls}" type="button" data-day="${day}">${day}</button>`;
+    }
+    calEl.innerHTML =
+      `<div class="cal-head">
+        <button class="cal-nav" id="calPrev" type="button" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <span class="cal-title">${MONTHS[mo]} ${y}</span>
+        <button class="cal-nav" id="calNext" type="button" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="cal-grid">${cells}</div>`;
+    calEl.querySelector('#calPrev').addEventListener('click', () => { calMonth = new Date(y, mo - 1, 1); renderCal(); });
+    calEl.querySelector('#calNext').addEventListener('click', () => { calMonth = new Date(y, mo + 1, 1); renderCal(); });
+    calEl.querySelectorAll('.cal-cell[data-day]').forEach(c => c.addEventListener('click', () => {
+      view = new Date(y, mo, +c.dataset.day); closeCal(); load();
+    }));
+  }
+  function openCal() { calMonth = new Date(view.getFullYear(), view.getMonth(), 1); renderCal(); calEl.hidden = false; }
+  function closeCal() { calEl.hidden = true; }
+  dateEl.addEventListener('click', (e) => { e.stopPropagation(); calEl.hidden ? openCal() : closeCal(); });
+  calEl.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => { if (!calEl.hidden) closeCal(); });
+
+  function render() {
+    if (!data) return;
+    const empty = data.status !== 'school' || !data.periods.length;
+    document.body.classList.toggle('sched-empty', empty);
+    if (empty) {
+      cardsEl.innerHTML = '';
+      statusEl.textContent = data.message || 'No school today!';
+      return;
+    }
+    const show0 = localStorage.getItem('gunngpt_show0') === '1';
+    const show8 = localStorage.getItem('gunngpt_show8') === '1';
+    let periods = data.periods.filter(p =>
+      (p.name !== 'Period 0' || show0) && (p.name !== 'Period 8' || show8));
+    cardsEl.innerHTML = periods.map(p => {
+      const dur = p.end - p.start;
+      const badges = (p.grades || []).map(g => `<span class="pn-grade">${g}th</span>`).join('');
+      return `<div class="sched-card" data-s="${p.start}" data-e="${p.end}" style="background:${colorFor(p.name)}"><div class="pn">${p.name}${badges}</div><div class="pt">${fmtTime(p.start)} – ${fmtTime(p.end)}</div><div class="pd" data-dur="${dur}">${dur} min long</div></div>`;
+    }).join('');
+    tick();
   }
 
   function tick() {
     const now = new Date();
-    clockEl.textContent = fmtClock(now);
-    if (!sched) return;
-    if (sched.status !== 'school') {
-      statusEl.textContent = sched.message || '';
-      barEl.classList.add('hidden'); listEl.classList.add('hidden');
-      return;
-    }
+    clockEl.textContent = now.toLocaleTimeString([], use24()
+      ? { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
+      : { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+    if (!data || data.status !== 'school' || !data.periods.length) return;
+    // Period 0 and Period 8 are optional (only some students have them), so they
+    // don't count toward when school "starts" or "ends" for everyone else.
+    const optional = p => p.name === 'Period 0' || p.name === 'Period 8';
+    const ps = data.periods.filter(p => !optional(p));
+    const core = ps.length ? ps : data.periods;
+    const firstStart = core[0].start, lastEnd = core[core.length - 1].end;
+    if (!isToday()) { statusEl.innerHTML = `School ends at <span class="hl">${fmtTime(lastEnd)}</span>`; return; }
     const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const ps = sched.periods;
-    const firstStart = ps[0].start * 60, lastEnd = ps[ps.length - 1].end * 60;
     let cur = null, upcoming = null;
-    for (const p of ps) { const s = p.start * 60, e = p.end * 60; if (nowSec >= s && nowSec < e) cur = p; if (nowSec < s && !upcoming) upcoming = p; }
-    if (nowSec < firstStart) {
-      statusEl.innerHTML = `School starts at <span class="hl">${fmtTime(ps[0].start)}</span> · in ${fmtDur(firstStart - nowSec)}`;
-      barEl.classList.add('hidden');
-    } else if (nowSec >= lastEnd) {
-      statusEl.textContent = "School's out for today 🎉";
-      barEl.classList.add('hidden');
-    } else if (cur) {
-      statusEl.innerHTML = `<span class="hl">${cur.name}</span> ends in ${fmtDur(cur.end * 60 - nowSec)}`;
-      barEl.classList.remove('hidden');
-      fillEl.style.width = (100 * (nowSec - cur.start * 60) / (cur.end * 60 - cur.start * 60)).toFixed(1) + '%';
-    } else if (upcoming) {
-      statusEl.innerHTML = `Passing period · <span class="hl">${upcoming.name}</span> in ${fmtDur(upcoming.start * 60 - nowSec)}`;
-      barEl.classList.add('hidden');
-    }
-    listEl.classList.remove('hidden');
-    for (const row of listEl.children) {
-      const s = +row.dataset.s * 60, e = +row.dataset.e * 60;
-      row.classList.toggle('now', nowSec >= s && nowSec < e);
+    for (const p of core) { const s = p.start * 60, e = p.end * 60; if (nowSec >= s && nowSec < e) cur = p; if (nowSec < s && !upcoming) upcoming = p; }
+    if (nowSec < firstStart * 60) statusEl.innerHTML = `School starts at <span class="hl">${fmtTime(firstStart)}</span> · in ${fmtDur(firstStart * 60 - nowSec)}`;
+    else if (nowSec >= lastEnd * 60) statusEl.innerHTML = `School's out for today 🎉 · ended at <span class="hl">${fmtTime(lastEnd)}</span>`;
+    else if (cur) statusEl.innerHTML = `<span class="hl">${cur.name}</span> ends in ${fmtDur(cur.end * 60 - nowSec)}`;
+    else if (upcoming) statusEl.innerHTML = `Passing period · <span class="hl">${upcoming.name}</span> in ${fmtDur(upcoming.start * 60 - nowSec)}`;
+    for (const card of cardsEl.children) {
+      const s = +card.dataset.s * 60, e = +card.dataset.e * 60, pd = card.querySelector('.pd'), dur = +pd.dataset.dur;
+      if (nowSec >= s && nowSec < e) { card.classList.add('now'); pd.textContent = `ends in ${fmtDur(e - nowSec)}`; }
+      else { card.classList.remove('now'); pd.textContent = nowSec < s ? `in ${fmtDur(s - nowSec)}` : `${dur} min long`; }
     }
   }
 
-  fetch('/api/today').then(r => r.json()).then(d => { sched = d; if (d.periods && d.periods.length) renderList(); tick(); }).catch(() => {});
+  el('schedPrev').addEventListener('click', () => { view.setDate(view.getDate() - 1); load(); });
+  el('schedNext').addEventListener('click', () => { view.setDate(view.getDate() + 1); load(); });
+  load();
   setInterval(tick, 1000);
-  tick();
+})();
+
+/* ---------- sidebar: tab switching + collapse ---------- */
+const tabLoaders = {};
+document.querySelectorAll('.side-item').forEach(t => t.addEventListener('click', () => {
+  const tab = t.dataset.tab;
+  document.body.dataset.tab = tab;
+  document.querySelectorAll('.side-item').forEach(x => x.classList.toggle('active', x === t));
+  if (tabLoaders[tab]) tabLoaders[tab]();
+  if (window.innerWidth <= 640) document.body.classList.add('collapsed');   // auto-close on mobile
+}));
+
+/* ---------- reusable popup modals ---------- */
+function openModal(inner, opts) {
+  opts = opts || {};
+  const back = document.createElement('div'); back.className = 'modal-back';
+  const modal = document.createElement('div'); modal.className = 'modal';
+  modal.innerHTML = (opts.closable === false ? '' :
+    '<button class="modal-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>') + inner;
+  back.appendChild(modal);
+  document.body.appendChild(back);
+  function close() {
+    back.classList.add('closing');
+    setTimeout(() => back.remove(), 180);
+    document.removeEventListener('keydown', onKey);
+  }
+  function onKey(e) { if (e.key === 'Escape') close(); }
+  back.addEventListener('click', e => { if (e.target === back) close(); });
+  const x = modal.querySelector('.modal-x'); if (x) x.addEventListener('click', close);
+  document.addEventListener('keydown', onKey);
+  return { back, modal, close };
+}
+function confirmDialog(message, sub, onYes) {
+  const inner = `<div class="confirm-msg">${escapeHtml(message)}</div>`
+    + (sub ? `<div class="confirm-sub">${escapeHtml(sub)}</div>` : '')
+    + `<div class="confirm-row"><button class="confirm-btn" data-no type="button">No</button><button class="confirm-btn danger" data-yes type="button">Yes</button></div>`;
+  const m = openModal(inner, { closable: false });
+  m.modal.classList.add('modal-confirm');
+  m.modal.querySelector('[data-no]').addEventListener('click', m.close);
+  m.modal.querySelector('[data-yes]').addEventListener('click', () => { m.close(); onYes(); });
+}
+
+/* ---------- clubs + courses: list of names -> detail popup ---------- */
+function matchTok(s, w) {
+  if (w.length <= 3) { const e = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return new RegExp('\\b' + e + '\\b').test(s); }
+  return s.includes(w);
+}
+function makeList(tab, url, opts) {
+  const { card, detail, searchable, groupBy, dayField } = opts;
+  const view = document.getElementById(tab + 'View');
+  const searchEl = view.querySelector('.list-search');
+  const listEl = view.querySelector('.list');
+  let data = null, activeDay = 'All';
+  const DAYS = ['All', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  if (dayField) {
+    const tabsEl = document.createElement('div'); tabsEl.className = 'day-tabs';
+    tabsEl.innerHTML = DAYS.map((d, i) => `<button class="day-tab${i === 0 ? ' active' : ''}" type="button" data-day="${d}">${d}</button>`).join('');
+    tabsEl.addEventListener('click', e => {
+      const b = e.target.closest('.day-tab'); if (!b) return;
+      activeDay = b.dataset.day;
+      tabsEl.querySelectorAll('.day-tab').forEach(x => x.classList.toggle('active', x === b));
+      render();
+    });
+    listEl.before(tabsEl);
+  }
+  function filtered() {
+    const words = searchEl.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    let items = data;
+    if (dayField && activeDay !== 'All') items = items.filter(d => (dayField(d) || '') === activeDay);
+    if (words.length) items = items.filter(d => { const s = searchable(d).toLowerCase(); return words.every(w => matchTok(s, w)); });
+    return items;
+  }
+  const cardHtml = d => `<button class="card" type="button" data-i="${data.indexOf(d)}">${card(d)}</button>`;
+  function render() {
+    if (!data) return;
+    const items = filtered();
+    if (!items.length) { listEl.innerHTML = '<div class="list-empty">No matches.</div>'; return; }
+    let html = '';
+    if (groupBy) {
+      const groups = {};
+      for (const d of items) { const g = (groupBy(d) || '').trim() || 'Other'; (groups[g] = groups[g] || []).push(d); }
+      for (const g of Object.keys(groups).sort())
+        html += `<div class="group-head">${escapeHtml(g)}</div><div class="card-grid">${groups[g].map(cardHtml).join('')}</div>`;
+    } else {
+      html = `<div class="card-grid">${items.map(cardHtml).join('')}</div>`;
+    }
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => show(data[+c.dataset.i])));
+  }
+  function show(d) { openModal(detail(d)); }
+  searchEl.addEventListener('input', render);
+  tabLoaders[tab] = () => {
+    if (data) return;
+    listEl.innerHTML = '<div class="list-empty">Loading…</div>';
+    fetch(url).then(r => r.json()).then(d => { data = d; render(); })
+      .catch(() => { listEl.innerHTML = '<div class="list-empty">Couldn\'t load right now.</div>'; });
+  };
+}
+const clubType = c => (c.type || '').replace(/\s*\(only for clubs\)/i, '').trim();
+makeList('clubs', '/api/clubs', {
+  card: c => `<div class="card-name">${escapeHtml(c.name)}</div>`
+    + (c.room ? `<div class="card-meta">${escapeHtml(c.room)}</div>` : ''),
+  detail: c => {
+    const t = clubType(c);
+    const badges = t ? `<span class="badge red">${escapeHtml(t)}</span>` : '';
+    const meets = [c.day, c.time, c.room && ('Room ' + c.room)].filter(Boolean).map(escapeHtml).join(' · ');
+    return `<h2 class="detail-title">${escapeHtml(c.name)}</h2>`
+      + (badges ? `<div class="detail-badges">${badges}</div>` : '')
+      + (meets ? `<div class="detail-info"><strong>Meets:</strong> ${meets}</div>` : '')
+      + (c.advisor ? `<div class="detail-info"><strong>Advisor:</strong> ${escapeHtml(c.advisor)}</div>` : '')
+      + (c.prez ? `<div class="detail-info"><strong>President:</strong> ${escapeHtml(c.prez)}</div>` : '')
+      + (c.desc ? `<div class="detail-desc">${escapeHtml(c.desc)}</div>` : '');
+  },
+  searchable: c => c.name + ' ' + clubType(c) + ' ' + c.desc,
+  groupBy: c => clubType(c),
+  dayField: c => c.day,
+});
+makeList('courses', '/api/courses', {
+  card: c => `<div class="card-name">${escapeHtml(c.title)}</div>`
+    + (c.credit ? `<div class="card-meta">${escapeHtml(c.credit)}</div>` : ''),
+  detail: c => {
+    const badges = [
+      c.section && `<span class="badge red">${escapeHtml(c.section)}</span>`,
+      (c.grades && c.grades.length) && `<span class="badge">Grades ${escapeHtml(c.grades.join(', '))}</span>`,
+      c.length && `<span class="badge">${escapeHtml(c.length)}</span>`,
+      c.credit && `<span class="badge">${escapeHtml(c.credit)}</span>`,
+    ].filter(Boolean).join('');
+    return `<h2 class="detail-title">${escapeHtml(c.title)}</h2>`
+      + (badges ? `<div class="detail-badges">${badges}</div>` : '')
+      + (c.desc ? `<div class="detail-desc">${escapeHtml(c.desc)}</div>` : '');
+  },
+  searchable: c => c.title + ' ' + c.desc + (/\bap\b/i.test(c.title) ? ' advanced placement' : ''),
+});
+const sideToggle = document.getElementById('sideToggle');
+function setCollapsed(v) {
+  document.body.classList.toggle('collapsed', v);
+  sideToggle.title = v ? 'Open sidebar' : 'Close sidebar';
+  try { localStorage.setItem('gunngpt_collapsed', v ? '1' : '0'); } catch (e) {}
+}
+sideToggle.addEventListener('click', () => setCollapsed(true));
+document.getElementById('logoBtn').addEventListener('click', () => setCollapsed(false));
+setCollapsed(localStorage.getItem('gunngpt_collapsed') === '1' || window.innerWidth <= 640);
+
+/* drag the sidebar edge to snap between collapsed / expanded (two positions only) */
+(function initSideResize() {
+  const handle = document.getElementById('sideResize');
+  let drag = null;
+  handle.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    drag = { x: e.clientX, collapsed: document.body.classList.contains('collapsed') };
+    handle.classList.add('rz-active'); handle.setPointerCapture(e.pointerId);
+  });
+  handle.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    if (drag.collapsed && dx > 34) { setCollapsed(false); drag.collapsed = false; drag.x = e.clientX; }
+    else if (!drag.collapsed && dx < -34) { setCollapsed(true); drag.collapsed = true; drag.x = e.clientX; }
+  });
+  const end = () => { drag = null; handle.classList.remove('rz-active'); };
+  handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
+})();
+
+/* ---------- barcode generator (Code 39, ported from WATT/UGWA) ---------- */
+(function initBarcode() {
+  const V = {'0':349,'1':581,'2':419,'3':661,'4':347,'5':589,'6':427,'7':341,'8':583,'9':421,A:599,K:605,U:527,B:437,L:443,V:311,C:679,M:685,W:553,D:383,N:389,X:293,E:625,O:631,Y:535,F:463,P:469,Z:319,G:359,Q:371,'-':287,H:601,R:613,'.':529,I:439,S:451,' ':313,J:385,T:397,'*':295,'+':2521,'/':2467,$:2461,'%':3007};
+  function draw(canvas, code) {
+    const c = canvas.getContext('2d');
+    const chars = ['*', ...String(code).toUpperCase().split('').filter(ch => Object.prototype.hasOwnProperty.call(V, ch)), '*'];
+    canvas.height = 100; canvas.width = Math.max(1, chars.length * 16 - 1);
+    c.fillStyle = '#fff'; c.fillRect(0, 0, canvas.width, canvas.height); c.fillStyle = '#000';
+    for (let i = 0, x = 0; i < chars.length; i++) {
+      const pat = V[chars[i]].toString(3);
+      for (let j = 0; j < pat.length; j++) {
+        if (pat[j] === '2') { c.fillRect(x, 0, 3, canvas.height); x += 4; }
+        else if (pat[j] === '1') { c.fillRect(x, 0, 1, canvas.height); x += 2; }
+        else { x += 2; }
+      }
+    }
+  }
+  const listEl = document.getElementById('barcodeList');
+  let barcodes;
+  try { barcodes = JSON.parse(localStorage.getItem('gunngpt_barcodes')); } catch (e) {}
+  if (!barcodes || !barcodes.length) barcodes = [['My ID', '95000000']];
+  const save = () => localStorage.setItem('gunngpt_barcodes', JSON.stringify(barcodes));
+  const modal = document.getElementById('bcModal');
+  const modalCanvas = document.getElementById('bcModalCanvas');
+  function openModal(code) { draw(modalCanvas, code); modal.hidden = false; }
+  modal.addEventListener('click', () => { modal.hidden = true; });
+
+  function render() {
+    listEl.innerHTML = '';
+    barcodes.forEach((b, i) => {
+      const item = document.createElement('div'); item.className = 'barcode-item';
+      const rm = document.createElement('button'); rm.className = 'bc-btn bc-x'; rm.type = 'button'; rm.setAttribute('aria-label', 'Remove');
+      rm.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+      const strip = document.createElement('div'); strip.className = 'bc-strip';
+      const canvas = document.createElement('canvas'); canvas.className = 'bc-canvas'; canvas.title = 'Tap to view fullscreen';
+      strip.appendChild(canvas);
+      const val = document.createElement('input'); val.className = 'bc-value'; val.value = b[1]; val.inputMode = 'numeric'; val.placeholder = '95000000';
+      val.addEventListener('input', () => { barcodes[i][1] = val.value; save(); draw(canvas, val.value); });
+      rm.addEventListener('click', () => confirmDialog(
+        'Delete this barcode?', 'This can\'t be undone.',
+        () => { barcodes.splice(i, 1); if (!barcodes.length) barcodes = [['My ID', '95000000']]; save(); render(); }));
+      canvas.addEventListener('click', () => openModal(val.value));
+      item.append(rm, strip, val); listEl.appendChild(item);
+      draw(canvas, b[1]);
+    });
+  }
+  document.getElementById('addBarcode').addEventListener('click', () => { barcodes.push(['Barcode ' + (barcodes.length + 1), '95000000']); save(); render(); });
+  window.gunngptResetBarcodes = () => { barcodes = [['My ID', '95000000']]; save(); render(); };
+  render();
 })();
 
 /* ---------- composer tools: OS detection, + menu, attachments, dictation ---------- */
@@ -619,8 +1288,9 @@ input.addEventListener('input', autogrow);
 input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
 
 /* ---------- scroll + messages ---------- */
-function atBottom() { return scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 120; }
-function scrollDown(force) { if (force || atBottom()) scroll.scrollTop = scroll.scrollHeight; }
+const chatScroll = document.getElementById('chatScroll');
+function atBottom() { return chatScroll.scrollHeight - chatScroll.scrollTop - chatScroll.clientHeight < 120; }
+function scrollDown(force) { if (force || atBottom()) chatScroll.scrollTop = chatScroll.scrollHeight; }
 function addUser(text, atts) {
   const w = document.createElement('div'); w.className = 'msg user';
   if (atts && atts.length) {
@@ -645,12 +1315,54 @@ function addAssistant() {
   return { wrap: w, prose: p };
 }
 
-document.querySelectorAll('.ex').forEach(e => {
-  const fill = () => { input.value = e.querySelector('.ex-text').textContent; autogrow(); form.requestSubmit(); };
-  e.addEventListener('click', fill);
-  e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); fill(); } });
-  e.querySelector('.x').addEventListener('click', ev => { ev.stopPropagation(); e.remove(); });
-});
+/* ---------- chat tab: greeting + suggestions + composer that docks ---------- */
+const bottomBar = document.getElementById('bottomBar');
+function dockComposer(atBottom) {
+  document.getElementById(atBottom ? 'composerAnchorBottom' : 'composerAnchorTop').appendChild(bottomBar);
+}
+dockComposer(false);   // start centered in the intro
+
+const S_ICONS = {
+  cal: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>',
+  food: '<path d="M5 3v6a3 3 0 0 0 6 0V3M8 3v18M18 3c-1.8 0-3 2.7-3 6s1.2 4 3 4v8"/>',
+  users: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 3-5.5 6.5-5.5s6.5 2.2 6.5 5.5"/><path d="M16.5 5.2a3.2 3.2 0 0 1 0 5.6M18 14.6c2.3.5 4 2.4 4 5.4"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2 1-1.2 1.9M12 17h.01"/>',
+  barcode: '<path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12"/>',
+};
+const GREETINGS = ['How can I help?', 'What can I help you find?', 'Ask me anything about Gunn.', 'Hey! What do you need?'];
+const SUGGESTIONS = [
+  ['food', "What's for lunch today?"],
+  ['clock', 'When does school end today?'],
+  ['users', 'What clubs meet on Wednesday?'],
+  ['user', 'Who teaches AP Biology?'],
+  ['cal', "When's the next day off?"],
+  ['clock', 'What time does brunch start?'],
+  ['book', 'What AP courses does Gunn offer?'],
+  ['cal', 'When is winter break?'],
+  ['clock', "What's the Friday schedule?"],
+  ['help', 'How do I use this app?'],
+  ['barcode', 'Where do I find the lunch barcode?'],
+  ['users', 'Recommend a club I could join'],
+];
+function refreshChatIntro() {
+  const greetEl = document.getElementById('chatGreeting'), wrap = document.getElementById('chatSuggests');
+  if (!greetEl || !wrap) return;
+  greetEl.textContent = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+  const pool = SUGGESTIONS.slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  wrap.innerHTML = pool.slice(0, 3).map(([ic, t]) =>
+    `<button class="suggest" type="button"><span class="s-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${S_ICONS[ic]}</svg></span><span class="s-t">${escapeHtml(t)}</span></button>`).join('');
+  wrap.querySelectorAll('.suggest').forEach(b => b.addEventListener('click', () => {
+    input.value = b.querySelector('.s-t').textContent; autogrow(); form.requestSubmit();
+  }));
+}
+tabLoaders['chat'] = () => {
+  if (!document.body.classList.contains('chatting')) refreshChatIntro();
+  setTimeout(() => input.focus(), 50);
+};
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -661,10 +1373,10 @@ form.addEventListener('submit', async (e) => {
   busy = true;
   const q = typed || 'Please take a look at the attached file.';
 
-  if (!started) {                     // move composer to the bottom on first send
+  if (!started) {                     // first message: drop the composer to the bottom
     started = true;
-    bottomBar.insertBefore(form, disclaimer);
     document.body.classList.add('chatting');
+    dockComposer(true);
   }
 
   input.value = ''; attached = []; renderAttachments(); autogrow(); send.disabled = true;
@@ -711,6 +1423,114 @@ form.addEventListener('submit', async (e) => {
   history = history.slice(-8);
   busy = false; autogrow(); input.focus();
 });
+
+/* ---------- map: pan + zoom ---------- */
+(function initMap() {
+  const canvas = document.getElementById('mapCanvas'), img = document.getElementById('mapImg');
+  let scale = 1, minScale = 1, tx = 0, ty = 0, natW = 0, natH = 0, fitted = false;
+  function apply() { img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`; }
+  function clamp() {
+    const cw = canvas.clientWidth, ch = canvas.clientHeight, w = natW * scale, h = natH * scale;
+    tx = w <= cw ? (cw - w) / 2 : Math.min(0, Math.max(cw - w, tx));
+    ty = h <= ch ? (ch - h) / 2 : Math.min(0, Math.max(ch - h, ty));
+  }
+  function fit() {
+    if (!natW) return;
+    const cw = canvas.clientWidth, ch = canvas.clientHeight;
+    minScale = Math.min(cw / natW, ch / natH);
+    scale = minScale; tx = (cw - natW * scale) / 2; ty = (ch - natH * scale) / 2;
+    apply();
+  }
+  function zoomAt(cx, cy, factor) {
+    const ns = Math.max(minScale, Math.min(minScale * 6, scale * factor));
+    const r = canvas.getBoundingClientRect(), px = cx - r.left, py = cy - r.top;
+    tx = px - (px - tx) * (ns / scale); ty = py - (py - ty) * (ns / scale);
+    scale = ns; clamp(); apply();
+  }
+  img.addEventListener('load', () => { natW = img.naturalWidth; natH = img.naturalHeight; if (!fitted) { fit(); fitted = true; } });
+  canvas.addEventListener('wheel', e => { e.preventDefault(); zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.15 : 1 / 1.15); }, { passive: false });
+  canvas.addEventListener('dblclick', e => {
+    if (e.target.closest('.map-tool')) return;
+    const maxed = scale >= minScale * 6 * 0.98;   // already fully zoomed in → zoom back out
+    zoomAt(e.clientX, e.clientY, maxed ? 1 / 2.5 : 2);
+  });
+  let dragging = false, lx = 0, ly = 0;
+  canvas.addEventListener('pointerdown', e => {
+    if (e.target.closest('.map-tool')) return;               // don't hijack control clicks
+    dragging = true; lx = e.clientX; ly = e.clientY; canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', e => { if (!dragging) return; tx += e.clientX - lx; ty += e.clientY - ly; lx = e.clientX; ly = e.clientY; clamp(); apply(); });
+  canvas.addEventListener('pointerup', e => { dragging = false; canvas.classList.remove('dragging'); });
+  canvas.addEventListener('pointercancel', () => { dragging = false; canvas.classList.remove('dragging'); });
+  const center = f => zoomAt(canvas.getBoundingClientRect().left + canvas.clientWidth / 2, canvas.getBoundingClientRect().top + canvas.clientHeight / 2, f);
+  document.getElementById('mapIn').addEventListener('click', () => center(1.5));
+  document.getElementById('mapOut').addEventListener('click', () => center(1 / 1.5));
+  document.getElementById('mapFit').addEventListener('click', fit);
+  tabLoaders['map'] = () => { if (natW) fit(); };   // re-fit when opened (canvas now has size)
+})();
+
+/* ---------- settings ---------- */
+// Apply the visual prefs immediately (before first paint of the schedule).
+function applyGunnPrefs() {
+  document.body.classList.toggle('theme-dark', localStorage.getItem('gunngpt_theme') === 'dark');
+  document.body.classList.toggle('no-clock', localStorage.getItem('gunngpt_showClock') === '0');
+}
+applyGunnPrefs();
+
+(function initSettings() {
+  const view = document.getElementById('settingsView');
+  const tabs = document.getElementById('setTabs');
+  // sub-tab switching
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('.set-tab'); if (!b) return;
+    tabs.querySelectorAll('.set-tab').forEach(x => x.classList.toggle('active', x === b));
+    view.querySelectorAll('.set-panel').forEach(p => p.hidden = p.dataset.stab !== b.dataset.stab);
+  });
+  // Theme — the animated day/night toggle.
+  window.setTheme = t => {
+    localStorage.setItem('gunngpt_theme', t);
+    applyGunnPrefs();
+    window.dispatchEvent(new Event('gunngpt:prefs'));
+  };
+  document.getElementById('themeToggle').addEventListener('click', () =>
+    window.setTheme(document.body.classList.contains('theme-dark') ? 'light' : 'dark'));
+
+  // Time format — the number flips inside the sliding knob.
+  const tf = document.getElementById('timeToggle');
+  const clkNum = document.getElementById('clkNum');
+  tf.dataset.fmt = localStorage.getItem('gunngpt_time24') === '1' ? '24' : '12';
+  clkNum.textContent = tf.dataset.fmt;
+  const flipTime = () => {
+    const next = tf.dataset.fmt === '24' ? '12' : '24';
+    tf.dataset.fmt = next;
+    localStorage.setItem('gunngpt_time24', next === '24' ? '1' : '0');
+    clkNum.classList.add('flip');
+    setTimeout(() => { clkNum.textContent = next; clkNum.classList.remove('flip'); }, 200);
+    window.dispatchEvent(new Event('gunngpt:prefs'));
+  };
+  tf.addEventListener('click', flipTime);
+  tf.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipTime(); } });
+
+  // Show clock — a running/stopped clock toggle.
+  const sc = document.getElementById('togClock');
+  sc.dataset.on = (localStorage.getItem('gunngpt_showClock') ?? '1') === '1' ? '1' : '0';
+  sc.addEventListener('click', () => {
+    sc.dataset.on = sc.dataset.on === '1' ? '0' : '1';
+    localStorage.setItem('gunngpt_showClock', sc.dataset.on);
+    applyGunnPrefs();
+  });
+
+  // Period 0 / 8 switches — off by default.
+  function toggle(id, storeKey, def, after) {
+    const cb = document.getElementById(id);
+    cb.checked = (localStorage.getItem(storeKey) ?? def) === '1';
+    cb.addEventListener('change', () => {
+      localStorage.setItem(storeKey, cb.checked ? '1' : '0'); after && after();
+    });
+  }
+  toggle('tog0', 'gunngpt_show0', '0', () => window.dispatchEvent(new Event('gunngpt:prefs')));
+  toggle('tog8', 'gunngpt_show8', '0', () => window.dispatchEvent(new Event('gunngpt:prefs')));
+})();
 </script>
 </body>
 </html>

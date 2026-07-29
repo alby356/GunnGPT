@@ -9,6 +9,7 @@ per-user rate limit let a single GPU serve a whole school politely.
 import datetime as dt
 import json
 import os
+import re
 import threading
 import time
 from collections import defaultdict, deque
@@ -93,10 +94,148 @@ def index():
     return FileResponse(os.path.join(config.HERE, "static", "index.html"))
 
 
+@app.get("/campus-map.png")
+def campus_map():
+    return FileResponse(os.path.join(config.HERE, "static", "map.png"))
+
+
 @app.get("/api/today")
-def today():
+def today(date: str = None):
     import bell
-    return bell.today_schedule()
+    d = None
+    if date:
+        try:
+            d = dt.date.fromisoformat(date)
+        except ValueError:
+            d = None
+    sc = bell.today_schedule(d)
+    sc["date"] = (d or dt.date.today()).isoformat()
+    return sc
+
+
+_watt_cache = {}
+
+
+def _watt_json(name):
+    import requests
+    now = time.time()
+    c = _watt_cache.get(name)
+    if c and now - c[0] < 21600:      # cache 6h
+        return c[1]
+    data = requests.get(f"{config.WATT_RAW}/{name}.json", timeout=15).json()
+    _watt_cache[name] = (now, data)
+    return data
+
+
+@app.get("/api/clubs")
+def clubs():
+    out = []
+    for c in _watt_json("clubs").get("data", {}).values():
+        if not c.get("name"):
+            continue
+        out.append({
+            "name": c["name"], "type": c.get("type", ""), "tier": c.get("tier", ""),
+            "day": c.get("day", ""), "time": c.get("time", ""), "room": c.get("room", ""),
+            "advisor": ", ".join(x for x in (c.get("advisor"), c.get("coadvisor")) if x),
+            "prez": c.get("prez", ""), "desc": c.get("desc", ""),
+        })
+    out.sort(key=lambda x: x["name"].lower())
+    return out
+
+
+ACRONYMS = {"AP", "AB", "BC", "US", "IB", "CS", "SJ", "HN", "AAR", "POE", "IED",
+            "PLTW", "VAPA", "CTE", "ELD", "ROTC", "PE", "ASB", "II", "III", "IV"}
+
+# Short words that stay lowercase in a title (unless first/last word).
+SMALL_WORDS = {"a", "an", "and", "as", "at", "but", "by", "for", "from", "in",
+               "nor", "of", "on", "or", "per", "the", "to", "via", "vs", "with"}
+
+# WATT titles some courses oddly; use the official Gunn catalog names.
+TITLE_FIXES = {
+    "AP AB Calculus": "AP Calculus AB",
+    "AP BC Calculus": "AP Calculus BC",
+    "AP 2-D Art & Design Emphasis on Painting/Drawing": "AP 2-D Art & Design",
+    "AP – Drawing": "AP Drawing",
+}
+
+# Courses in Gunn's official catalog that WATT's data is missing.
+EXTRA_COURSES = [
+    {
+        "title": "AP Physics C: Electricity & Magnetism",
+        "section": "Science",
+        "grades": [11, 12],
+        "length": "Semester",
+        "credit": 'UC Approved "d"',
+        "desc": ("The second semester of the traditional, calculus-based AP Physics C "
+                 "course (paired with Mechanics). Equivalent to a college physics course "
+                 "for majors and engineers, it covers electricity and magnetism and "
+                 "prepares students for the AP Physics C: E&M exam. Students sign up for "
+                 "both Mechanics (3859A) and E&M (3859E). Prerequisite: concurrent "
+                 "enrollment in or completion of a calculus course (BC Calculus "
+                 "recommended); a previous physics course is recommended."),
+    },
+]
+
+
+def _cap_word(w):
+    """Capitalize one word: keep acronyms/single letters uppercase, otherwise
+    uppercase the first letter and lowercase the rest (punctuation-safe)."""
+    core = "".join(ch for ch in w if ch.isalpha())
+    if not core:
+        return w
+    if core.upper() in ACRONYMS or len(core) == 1:
+        return w.upper()
+    out, capped = [], False
+    for ch in w:
+        if ch.isalpha() and not capped:
+            out.append(ch.upper()); capped = True
+        else:
+            out.append(ch.lower())
+    return "".join(out)
+
+
+def _titlecase(s):
+    """Proper title case: acronyms stay uppercase, small words stay lowercase
+    (except first/last), and hyphen/slash parts are each capitalized."""
+    toks = s.split()
+    n = len(toks)
+    out = []
+    for i, tok in enumerate(toks):
+        bare = "".join(ch for ch in tok if ch.isalpha()).lower()
+        if 0 < i < n - 1 and bare in SMALL_WORDS:
+            out.append(tok.lower())
+            continue
+        # capitalize each piece around hyphens and slashes (e.g. "2-d" -> "2-D")
+        out.append("".join(_cap_word(p) if p not in "-/" else p
+                           for p in re.split(r"([-/])", tok)))
+    return " ".join(out)
+
+
+@app.get("/api/courses")
+def courses():
+    out, seen = [], set()
+    for c in _watt_json("catalog").get("data", []):
+        names = c.get("names", [])
+        raw = names[0]["title"].strip().replace("*", "") if names else "Course"
+        title = _titlecase(" ".join(raw.split()))
+        title = TITLE_FIXES.get(title, title)
+        if title.lower() in seen:                       # WATT lists some courses twice
+            continue
+        seen.add(title.lower())
+        out.append({
+            "title": title,
+            "section": _titlecase(c.get("section") or ""),
+            "grades": c.get("grades", []),
+            "length": c.get("length", ""),
+            "credit": c.get("credit", ""),
+            "desc": " ".join((c.get("description") or "").split()),
+        })
+    for extra in EXTRA_COURSES:                          # add courses WATT is missing
+        if extra["title"].lower() not in seen:
+            out.append(dict(extra))
+            seen.add(extra["title"].lower())
+    out.sort(key=lambda x: x["title"])
+    return out
 
 
 @app.post("/api/chat")
